@@ -1,0 +1,35 @@
+## Fixed requirements.txt for Python 3.13 compatibility
+## Resolved version conflicts and compatibility issues
+
+# Core AI and CrewAI - using compatible versions
+crewai>=0.130.0,<1.0.0
+crewai-tools>=0.43.0,<1.0.0
+#embedchain==0.0.73
+
+# Web API framework
+fastapi==0.110.3
+uvicorn==0.29.0
+python-multipart==0.0.9
+
+# LLM and AI
+openai>=1.30.5
+langchain-community>=0.2.14
+langchain-core>=0.1.52
+
+# PDF processing
+pypdf>=4.2.0
+pdfplumber>=0.11.4
+
+# Data processing and analysis - fixed version constraints
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scikit-learn>=1.3.0,<2.0.0
+matplotlib>=3.7.0,<4.0.0
+
+# Environment configuration
+python-dotenv>=1.0.1
+
+# Essential utilities
+click>=8.1.0
+Jinja2>=3.1.0
+pydantic>=2.4.0,<3.0.0
