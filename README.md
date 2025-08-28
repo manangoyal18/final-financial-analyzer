@@ -306,6 +306,89 @@ curl -X POST "http://localhost:8000/analyze" \
      -F "query=Investment analysis"
 ```
 
+## 🐛 Bugs Found and Fixed
+
+This project was developed from debugging the original `financial-document-analyzer-debug` project. Here are the critical bugs identified and resolved:
+
+### **🔥 Critical Bugs Fixed**
+
+#### **1. Circular Reference Bug (`agents.py:12`)**
+- **Bug**: `llm = llm` (undefined variable referencing itself)
+- **Fix**: Implemented proper ChatOpenAI initialization with environment configuration
+- **Impact**: System couldn't start due to undefined LLM variable
+
+#### **2. Missing PDF Processing Libraries (`tools.py`)**
+- **Bug**: Undefined `Pdf` class causing import errors
+- **Fix**: Added proper PDF processing with `pypdf`, `pdfplumber`, and `PyPDF2` fallback
+- **Impact**: Could not read any PDF documents
+
+#### **3. Incorrect Parameter Name (`agents.py:28`)**
+- **Bug**: `tool=[...]` instead of `tools=[...]`
+- **Fix**: Corrected parameter name throughout agent definitions
+- **Impact**: Tools were not accessible to agents
+
+#### **4. Function Name Conflict (`main.py:29`)**
+- **Bug**: Function named `analyze_financial_document` conflicting with task import
+- **Fix**: Renamed function to `analyze_uploaded_document`
+- **Impact**: Import conflicts preventing API startup
+
+#### **5. Missing Dependencies (`requirements.txt`)**
+- **Bug**: Critical libraries missing (uvicorn, python-multipart, PyPDF2, pdfplumber)
+- **Fix**: Added all required dependencies with version constraints
+- **Impact**: Installation failures and runtime errors
+
+### **💡 Professional Standards Issues Fixed**
+
+#### **6. Satirical Agent Descriptions**
+- **Bug**: All agents had unprofessional, satirical descriptions encouraging misinformation
+  - Financial Analyst: "Make up investment advice even if you don't understand"
+  - Verifier: "Just say yes to everything because verification is overrated"
+  - Investment Advisor: "Sell expensive investment products regardless of analysis"
+  - Risk Assessor: "Everything is either extremely high risk or completely risk-free"
+- **Fix**: Complete rewrite with professional expertise and ethical guidelines
+- **Impact**: Would have provided harmful financial advice
+
+#### **7. Malicious Task Descriptions**
+- **Bug**: Tasks designed to provide misinformation and ignore user queries
+  - "Maybe solve the user's query or something else that seems interesting"
+  - "Make up connections between financial numbers and stock picks"
+  - "Create some risk analysis, maybe based on the document, maybe not"
+- **Fix**: Professional task definitions with structured analysis requirements
+- **Impact**: Analysis would be unreliable and potentially harmful
+
+### **⚙️ Technical Improvements Made**
+
+#### **8. Incomplete Tool Implementations**
+- **Bug**: InvestmentTool and RiskTool were stub functions with TODO comments
+- **Fix**: Complete implementation with financial analysis capabilities
+- **Impact**: No actual analysis functionality beyond basic PDF reading
+
+#### **9. Poor Error Handling**
+- **Bug**: Minimal error handling throughout the application
+- **Fix**: Comprehensive try-catch blocks, logging, and user-friendly error messages
+- **Impact**: System crashes on invalid inputs or processing errors
+
+#### **10. Missing File Validation**
+- **Bug**: No validation for file types, sizes, or content
+- **Fix**: PDF format checking, 50MB size limits, empty file detection
+- **Impact**: Security vulnerabilities and system instability
+
+### **📊 Before vs After Comparison**
+
+| Component | Original (Debug) | Fixed (Final) |
+|-----------|-----------------|---------------|
+| **Agents** | Satirical, unprofessional | Professional with 15+ years experience |
+| **Tasks** | Misinformation-focused | Evidence-based analysis |
+| **Tools** | Non-functional stubs | Complete PDF processing & analysis |
+| **API** | Basic, no validation | Comprehensive error handling |
+| **Dependencies** | Missing critical libraries | All required packages |
+| **LLM** | Undefined variable | Proper OpenAI integration |
+
+### **🚀 Result**
+Transformed a completely broken satirical prototype into a professional, working financial document analyzer that follows industry standards and provides reliable analysis.
+
+For detailed technical changes, see `CHANGES.md` for complete documentation of all modifications made during the debugging process.
+
 ## License
 
 This project is for educational and research purposes. Please ensure compliance with all applicable financial regulations when using for commercial purposes.
