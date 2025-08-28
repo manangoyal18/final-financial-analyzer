@@ -1,39 +1,60 @@
-## Updated README.md with complete instructions and system status
-## Old README had debug instructions and broken setup information
-# Financial Document Analyzer
+# Financial Document Analyzer - Enhanced Async Version
 
 ## Project Overview
-A comprehensive financial document analysis system that processes corporate reports, financial statements, and investment documents using AI-powered analysis agents built with CrewAI.
+
+A comprehensive financial document analysis system that processes corporate reports, financial statements, and investment documents using AI-powered analysis agents built with CrewAI. **Now with asynchronous processing, queue management, and database persistence.**
 
 ## ✅ System Status
-**FULLY FUNCTIONAL** - All bugs have been fixed and the system is ready for production use.
+
+**ENHANCED WITH ASYNC PROCESSING** - The system now features:
+- 🔄 **Asynchronous document processing** with Celery workers
+- 📊 **Database integration** for persistent storage
+- 🚀 **Queue management** with Redis
+- 📈 **Concurrent request handling**
+- 💾 **Result caching and deduplication**
 
 ## Features
+
+### Core Analysis Features
 - 📊 **AI-Powered Financial Analysis** - Professional financial document analysis using specialized AI agents
 - 📈 **Investment Recommendations** - Data-driven investment insights and recommendations
 - ⚠️ **Risk Assessment** - Comprehensive risk analysis and management strategies
 - 🔍 **Document Verification** - Automatic validation of financial document authenticity
+
+### New Async & Persistence Features
+- 🔄 **Asynchronous Processing** - Non-blocking document analysis with background workers
+- 📊 **Database Integration** - SQLAlchemy models for persistent storage
+- 🚀 **Queue Management** - Celery with Redis for scalable task processing
+- 📈 **Status Polling** - Real-time job status tracking via REST API
+- 💾 **Result Caching** - Automatic deduplication of identical analyses
+- 🔍 **Analysis History** - Track and query past analyses
+- ⚡ **Concurrent Processing** - Handle multiple document uploads simultaneously
+
+### API Features
 - 🚀 **RESTful API** - Easy integration with web applications and external systems
 - 📱 **Interactive Documentation** - Built-in API documentation with FastAPI
+- 🏥 **Health Monitoring** - System health checks for database and queue status
 
 ## Getting Started
 
 ### Prerequisites
+
 - Python 3.8 or higher
 - OpenAI API key
+- Redis server (for queue management)
 - Git
 
-## Updated installation with optimized approach for better reliability
-## Old installation method had timeout issues with large dependency list
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone <repository-url>
-cd financial-document-analyzer-debug
+cd financial-document-analyzer
 ```
 
 2. **Create Virtual Environment (Recommended)**
+
 ```bash
 # Create virtual environment
 python -m venv .venv
@@ -47,72 +68,124 @@ source .venv/Scripts/activate
 
 # Windows Command Prompt:
 .venv\Scripts\activate.bat
+
+# macOS/Linux:
+source .venv/bin/activate
 ```
 
-3. **Install Required Libraries (Optimized)**
+3. **Install Dependencies**
+
 ```bash
 # Upgrade pip and tools first
 python -m pip install --upgrade pip setuptools wheel
 
-# Install core dependencies in chunks (faster and more reliable)
-pip install crewai==0.130.0 crewai-tools==0.47.1
-pip install fastapi==0.110.3 uvicorn==0.29.0
-pip install langchain-community==0.2.14 pypdf==4.2.0
-pip install python-dotenv==1.0.1 openai==1.30.5
-
-# Install remaining dependencies
-pip install PyPDF2==3.0.1 pdfplumber==0.10.0 python-multipart==0.0.9
-pip install pandas==2.2.2 numpy==1.26.4 scikit-learn==1.4.2
-```
-
-4. **Alternative: Install All at Once**
-```bash
+# Install all dependencies
 pip install -r requirements.txt
 ```
 
+4. **Setup Infrastructure**
+
+**Option 1: Using Docker (Recommended)**
+
+```bash
+# Start Redis and PostgreSQL
+docker-compose up -d
+
+# Wait for services to be healthy
+docker-compose ps
+```
+
+**Option 2: Manual Setup**
+
+Install and start Redis:
+```bash
+# Windows (using Chocolatey)
+choco install redis-64
+redis-server
+
+# macOS (using Homebrew)
+brew install redis
+redis-server
+
+# Ubuntu/Debian
+sudo apt install redis-server
+sudo systemctl start redis
+```
+
 5. **Configure Environment Variables**
-   
+
    Create a `.env` file by copying the example template:
+
    ```bash
    # Copy the example file
    cp .env.example .env
-   
-   # Edit the .env file with your API keys
-   # Windows users can use: copy .env.example .env
+   # Windows: copy .env.example .env
    ```
-   
-   Then edit `.env` and add your OpenAI API key:
+
+   Then edit `.env` with your configuration:
+
    ```bash
+   # Required: OpenAI Configuration
    OPENAI_API_KEY=your_actual_openai_api_key_here
    OPENAI_MODEL=gpt-4
-   
-   # Optional: Add Serper API key for enhanced web search
+
+   # Database (SQLite default, or use PostgreSQL)
+   DATABASE_URL=sqlite:///./financial_analyzer.db
+   # DATABASE_URL=postgresql://finuser:finpass123@localhost/financial_analyzer
+
+   # Redis Configuration
+   REDIS_URL=redis://localhost:6379/0
+
+   # Optional: Enhanced web search
    SERPER_API_KEY=your_serper_api_key_here
    ```
-   
+
    **Get your OpenAI API key**: https://platform.openai.com/api-keys
 
 ### Sample Document
+
 The system analyzes financial documents like Tesla's Q2 2025 financial update (included in the `data/` folder).
 
 **Supported Document Types:**
+
 - Annual Reports (10-K)
-- Quarterly Reports (10-Q)  
+- Quarterly Reports (10-Q)
 - Earnings Reports
 - Financial Statements
 - Investment Prospectuses
 - Corporate Financial Updates
 
 **Document Requirements:**
+
 - PDF format only
 - Maximum file size: 50MB
 - Must contain readable financial data
 
 ## 🚀 Quick Start
 
-### Running the Application
+### Running the Enhanced System
 
-1. **Start the server**
+The enhanced system requires three components: Redis, Celery worker, and FastAPI server.
+
+**Terminal 1: Start Redis** (if not using Docker)
+```bash
+redis-server
+```
+
+**Terminal 2: Start Celery Worker**
+```bash
+python start_worker.py
+```
+You should see:
+```
+Starting Financial Document Analyzer Celery Worker...
+Worker will process tasks from the 'analysis' queue
+[2024-XX-XX 12:00:00,000: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2024-XX-XX 12:00:00,000: INFO/MainProcess] mingle: searching for available workers
+[2024-XX-XX 12:00:00,000: INFO/MainProcess] celery@hostname ready.
+```
+
+**Terminal 3: Start FastAPI Server**
 ```bash
 python main.py
 ```
@@ -120,21 +193,16 @@ python main.py
 2. **Access the API**
    - **API Base URL**: http://localhost:8000
    - **Interactive Documentation**: http://localhost:8000/docs
-   - **Health Check**: http://localhost:8000/
+   - **Health Check**: http://localhost:8000/health
+   - **System Status**: http://localhost:8000/
 
 ### Using the API
 
-#### Upload and Analyze a Document
+#### Upload and Analyze a Document (Async Flow)
 
-**Option 1: Using the Web Interface**
-1. Go to http://localhost:8000/docs
-2. Click on the `POST /analyze` endpoint
-3. Click "Try it out"
-4. Upload your PDF file
-5. Enter your analysis query (optional)
-6. Click "Execute"
+**Step 1: Submit Document for Analysis**
 
-**Option 2: Using cURL**
+**Using cURL:**
 ```bash
 curl -X POST "http://localhost:8000/analyze" \
      -H "accept: application/json" \
@@ -143,24 +211,95 @@ curl -X POST "http://localhost:8000/analyze" \
      -F "query=Analyze this document for investment opportunities"
 ```
 
-**Option 3: Using Python**
+**Response:**
+```json
+{
+  "status": "submitted",
+  "analysis_id": 123,
+  "task_id": "abc123-def456-789",
+  "message": "Analysis submitted for processing",
+  "file_processed": "tesla-q2-2025.pdf",
+  "file_size_mb": 2.4
+}
+```
+
+**Step 2: Poll for Analysis Status**
+
+**Using cURL:**
+```bash
+curl -X GET "http://localhost:8000/status/123"
+```
+
+**Response (In Progress):**
+```json
+{
+  "analysis_id": 123,
+  "status": "running",
+  "task_id": "abc123-def456-789",
+  "task_status": "PROGRESS",
+  "query": "Analyze this document for investment opportunities",
+  "created_at": "2024-01-01T12:00:00Z",
+  "started_at": "2024-01-01T12:00:05Z",
+  "completed_at": null,
+  "duration_seconds": 0
+}
+```
+
+**Response (Completed):**
+```json
+{
+  "analysis_id": 123,
+  "status": "completed",
+  "task_id": "abc123-def456-789",
+  "task_status": "SUCCESS",
+  "query": "Analyze this document for investment opportunities",
+  "result": "Comprehensive financial analysis results...",
+  "created_at": "2024-01-01T12:00:00Z",
+  "started_at": "2024-01-01T12:00:05Z",
+  "completed_at": "2024-01-01T12:05:30Z",
+  "duration_seconds": 325
+}
+```
+
+**Using Python:**
+
 ```python
 import requests
+import time
 
+# Step 1: Submit document
 with open('your_financial_document.pdf', 'rb') as f:
     response = requests.post(
         'http://localhost:8000/analyze',
         files={'file': f},
         data={'query': 'Provide investment analysis'}
     )
+
+submission = response.json()
+analysis_id = submission['analysis_id']
+print(f"Analysis submitted: {analysis_id}")
+
+# Step 2: Poll for completion
+while True:
+    status_response = requests.get(f'http://localhost:8000/status/{analysis_id}')
+    status = status_response.json()
     
-analysis = response.json()
-print(analysis['analysis'])
+    if status['status'] == 'completed':
+        print("Analysis completed!")
+        print(status['result'])
+        break
+    elif status['status'] == 'failed':
+        print(f"Analysis failed: {status['error_message']}")
+        break
+    else:
+        print(f"Status: {status['status']}, waiting...")
+        time.sleep(10)  # Poll every 10 seconds
 ```
 
 ## System Capabilities
 
 ### ✅ Core Features
+
 - ✅ **Upload financial documents** (PDF format)
 - ✅ **AI-powered financial analysis** using GPT-4
 - ✅ **Investment recommendations** with valuation metrics
@@ -172,13 +311,14 @@ print(analysis['analysis'])
 ### 🤖 AI Agents
 
 1. **Financial Analyst** - Comprehensive financial analysis and metrics evaluation
-2. **Investment Advisor** - Investment recommendations and portfolio guidance  
+2. **Investment Advisor** - Investment recommendations and portfolio guidance
 3. **Risk Assessor** - Risk quantification and mitigation strategies
 4. **Document Verifier** - Document validation and quality assessment
 
 ### 📊 Analysis Output
 
 The system provides structured analysis including:
+
 - **Executive Summary** with key findings
 - **Financial Performance Analysis** with trends and ratios
 - **Investment Thesis** with recommendations
@@ -188,30 +328,57 @@ The system provides structured analysis including:
 ## API Endpoints
 
 ### GET /
-**Health Check**
-- Returns system status
+
+**Root Health Check**
+- Returns basic system status
+- No parameters required
+
+### GET /health
+
+**Extended Health Check**
+- Returns detailed system health including database and Celery status
 - No parameters required
 
 ### POST /analyze
-**Document Analysis**
-- **Input**: 
+
+**Submit Document for Analysis (Async)**
+- **Input**:
   - `file`: PDF financial document (required)
   - `query`: Analysis question/focus (optional)
-- **Output**: Comprehensive financial analysis JSON response
+- **Output**: Submission confirmation with analysis_id for tracking
 - **Example Response**:
+
 ```json
 {
-  "status": "success",
-  "query": "Analyze investment opportunities",
-  "analysis": "Comprehensive analysis report...",
+  "status": "submitted",
+  "analysis_id": 123,
+  "task_id": "abc123-def456-789",
+  "message": "Analysis submitted for processing",
   "file_processed": "tesla-q2-2025.pdf",
   "file_size_mb": 2.4
 }
 ```
 
+### GET /status/{analysis_id}
+
+**Get Analysis Status**
+- **Input**: `analysis_id` (path parameter)
+- **Output**: Current status and results if completed
+- **Status Values**: `pending`, `running`, `completed`, `failed`
+
+### GET /analyses
+
+**List Analysis History**
+- **Query Parameters**:
+  - `limit`: Number of results (default: 10)
+  - `offset`: Pagination offset (default: 0)
+  - `status`: Filter by status (optional)
+- **Output**: Paginated list of analyses with summary information
+
 ## Configuration
 
 ### Environment Variables (.env)
+
 ```bash
 # OpenAI Configuration (already configured)
 OPENAI_API_KEY=your_api_key_here
@@ -236,27 +403,35 @@ You can customize your analysis by providing specific queries:
 ### Common Issues
 
 **1. API Key Error**
+
 ```
 Error: OpenAI API key not found
 ```
+
 **Solution**: Check that your `.env` file contains a valid `OPENAI_API_KEY`
 
 **2. PDF Processing Error**
+
 ```
 Error: Could not extract text from PDF
 ```
+
 **Solution**: Ensure the PDF contains readable text (not just images) and isn't corrupted
 
 **3. File Too Large**
+
 ```
 Error: File too large (max 50MB)
 ```
+
 **Solution**: Compress your PDF or split large documents into smaller sections
 
 **4. Invalid File Format**
+
 ```
 Error: Only PDF files are supported
 ```
+
 **Solution**: Convert your document to PDF format before uploading
 
 ### Getting Help
@@ -266,36 +441,12 @@ Error: Only PDF files are supported
 3. **Test with sample**: Try the included sample document first
 4. **API Documentation**: Visit http://localhost:8000/docs for interactive testing
 
-## Project Structure
-
-```
-financial-document-analyzer-debug/
-├── main.py              # FastAPI application and server
-├── agents.py            # AI agent definitions
-├── task.py             # Analysis task definitions  
-├── tools.py            # Document processing and analysis tools
-├── requirements.txt    # Python dependencies
-├── .env               # Environment configuration
-├── data/              # Document storage directory
-│   └── TSLA-Q2-2025-Update.pdf
-├── outputs/           # Analysis output directory
-├── README.md          # This file
-├── CHANGES.md         # Complete change documentation
-└── PROJECT_OVERVIEW.md # System architecture guide
-```
-
 ## Development
-
-### Adding New Features
-
-1. **New Analysis Agents**: Add to `agents.py`
-2. **Custom Tools**: Extend `tools.py`
-3. **Additional Tasks**: Define in `task.py`
-4. **API Endpoints**: Add to `main.py`
 
 ### Testing
 
 Test the system with various financial documents:
+
 ```bash
 # Start the server
 python main.py
@@ -308,31 +459,34 @@ curl -X POST "http://localhost:8000/analyze" \
 
 ## 🐛 Bugs Found and Fixed
 
-This project was developed from debugging the original `financial-document-analyzer-debug` project. Here are the critical bugs identified and resolved:
-
 ### **🔥 Critical Bugs Fixed**
 
 #### **1. Circular Reference Bug (`agents.py:12`)**
+
 - **Bug**: `llm = llm` (undefined variable referencing itself)
 - **Fix**: Implemented proper ChatOpenAI initialization with environment configuration
 - **Impact**: System couldn't start due to undefined LLM variable
 
 #### **2. Missing PDF Processing Libraries (`tools.py`)**
+
 - **Bug**: Undefined `Pdf` class causing import errors
 - **Fix**: Added proper PDF processing with `pypdf`, `pdfplumber`, and `PyPDF2` fallback
 - **Impact**: Could not read any PDF documents
 
 #### **3. Incorrect Parameter Name (`agents.py:28`)**
+
 - **Bug**: `tool=[...]` instead of `tools=[...]`
 - **Fix**: Corrected parameter name throughout agent definitions
 - **Impact**: Tools were not accessible to agents
 
 #### **4. Function Name Conflict (`main.py:29`)**
+
 - **Bug**: Function named `analyze_financial_document` conflicting with task import
 - **Fix**: Renamed function to `analyze_uploaded_document`
 - **Impact**: Import conflicts preventing API startup
 
 #### **5. Missing Dependencies (`requirements.txt`)**
+
 - **Bug**: Critical libraries missing (uvicorn, python-multipart, PyPDF2, pdfplumber)
 - **Fix**: Added all required dependencies with version constraints
 - **Impact**: Installation failures and runtime errors
@@ -340,6 +494,7 @@ This project was developed from debugging the original `financial-document-analy
 ### **💡 Professional Standards Issues Fixed**
 
 #### **6. Satirical Agent Descriptions**
+
 - **Bug**: All agents had unprofessional, satirical descriptions encouraging misinformation
   - Financial Analyst: "Make up investment advice even if you don't understand"
   - Verifier: "Just say yes to everything because verification is overrated"
@@ -349,6 +504,7 @@ This project was developed from debugging the original `financial-document-analy
 - **Impact**: Would have provided harmful financial advice
 
 #### **7. Malicious Task Descriptions**
+
 - **Bug**: Tasks designed to provide misinformation and ignore user queries
   - "Maybe solve the user's query or something else that seems interesting"
   - "Make up connections between financial numbers and stock picks"
@@ -359,40 +515,19 @@ This project was developed from debugging the original `financial-document-analy
 ### **⚙️ Technical Improvements Made**
 
 #### **8. Incomplete Tool Implementations**
+
 - **Bug**: InvestmentTool and RiskTool were stub functions with TODO comments
 - **Fix**: Complete implementation with financial analysis capabilities
 - **Impact**: No actual analysis functionality beyond basic PDF reading
 
 #### **9. Poor Error Handling**
+
 - **Bug**: Minimal error handling throughout the application
 - **Fix**: Comprehensive try-catch blocks, logging, and user-friendly error messages
 - **Impact**: System crashes on invalid inputs or processing errors
 
 #### **10. Missing File Validation**
+
 - **Bug**: No validation for file types, sizes, or content
 - **Fix**: PDF format checking, 50MB size limits, empty file detection
 - **Impact**: Security vulnerabilities and system instability
-
-### **📊 Before vs After Comparison**
-
-| Component | Original (Debug) | Fixed (Final) |
-|-----------|-----------------|---------------|
-| **Agents** | Satirical, unprofessional | Professional with 15+ years experience |
-| **Tasks** | Misinformation-focused | Evidence-based analysis |
-| **Tools** | Non-functional stubs | Complete PDF processing & analysis |
-| **API** | Basic, no validation | Comprehensive error handling |
-| **Dependencies** | Missing critical libraries | All required packages |
-| **LLM** | Undefined variable | Proper OpenAI integration |
-
-### **🚀 Result**
-Transformed a completely broken satirical prototype into a professional, working financial document analyzer that follows industry standards and provides reliable analysis.
-
-For detailed technical changes, see `CHANGES.md` for complete documentation of all modifications made during the debugging process.
-
-## License
-
-This project is for educational and research purposes. Please ensure compliance with all applicable financial regulations when using for commercial purposes.
-
-## Disclaimer
-
-This system provides educational analysis only and should not be considered as professional financial advice. Always consult with qualified financial advisors for investment decisions.
